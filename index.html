@@ -1,965 +1,356 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#08080f">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#06070d" />
+<meta name="description" content="Link Shorter &amp; Link List Generator — Facebook পোস্ট লিংক লিস্ট প্রিমিয়াম ফরম্যাটে সাজানোর টুল" />
 <title>Link Shorter &amp; Link List Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  [hidden] { display: none !important; }
+/* ============ PREMIUM DARK — INK & CHAMPAGNE ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit','Hind Siliguri',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:#05060a;color:#eceef8;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+::selection{background:rgba(109,107,240,.45);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.24);background-clip:content-box}
 
-  :root{
-    --bg0:#07070d;
-    --card: rgba(255,255,255,.05);
-    --border: rgba(255,255,255,.09);
-    --txt:#eceaf6;
-    --muted:#9a97ad;
-    --faint:#6f6c82;
-    --ac1:#8b5cf6; --ac2:#6366f1; --ac3:#22d3ee; --ac4:#ec4899;
-    --ok:#34d399; --warn:#fbbf24; --err:#f87171;
-  }
+/* ambient background */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1000px 640px at 84% -10%, rgba(109,107,240,.15), transparent 62%),
+    radial-gradient(840px 580px at -8% 32%, rgba(23,162,184,.09), transparent 60%),
+    radial-gradient(780px 540px at 52% 114%, rgba(201,162,77,.075), transparent 60%);}
+.bg::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.3px);
+  background-size:34px 34px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);
+  mask-image:radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);
+  opacity:.5}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.42;animation:drift 26s ease-in-out infinite}
+.o1{width:460px;height:460px;background:rgba(109,107,240,.20);top:-150px;right:-100px}
+.o2{width:400px;height:400px;background:rgba(23,162,184,.13);bottom:-150px;left:-120px;animation-delay:-9s}
+.o3{width:340px;height:340px;background:rgba(201,162,77,.10);top:44%;left:60%;animation-delay:-17s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-36px,46px) scale(1.06)}}
 
-  html, body { height: 100%; }
+/* layout */
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:30px 18px 64px}
 
-  body{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Bengali", sans-serif;
-    color: var(--txt);
-    background:
-      radial-gradient(1200px 800px at 85% -10%, rgba(99,102,241,.20), transparent 60%),
-      radial-gradient(900px 700px at -10% 20%, rgba(139,92,246,.16), transparent 55%),
-      radial-gradient(800px 600px at 60% 110%, rgba(34,211,238,.12), transparent 55%),
-      linear-gradient(180deg, #08080f, #0b0b15 55%, #07070d);
-    background-attachment: fixed;
-    min-height: 100vh;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
+/* hero */
+.hero{display:flex;align-items:center;gap:16px;padding:4px 4px 24px;animation:fadeUp .6s ease both}
+.logo{flex:none;width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:26px;
+  background:linear-gradient(150deg,#181a2c,#0d0f1d);
+  border:1px solid rgba(227,196,127,.42);
+  box-shadow:0 16px 44px -14px rgba(109,107,240,.55), inset 0 1px 0 rgba(255,255,255,.09);}
+.hero h1{font-size:clamp(1.3rem,4.5vw,1.95rem);font-weight:800;letter-spacing:-.02em;line-height:1.2;
+  background:linear-gradient(92deg,#ffffff 12%,#c7cdfa 55%,#e8d5a4 108%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.tagline{color:#9298b0;font-size:.92rem;margin-top:5px}
 
-  /* Floating gradient orbs */
-  .orb{ position: fixed; border-radius: 50%; filter: blur(90px); opacity:.5; z-index:-1; pointer-events:none; animation: float 16s ease-in-out infinite; }
-  .orb1{ width:420px; height:420px; top:-120px; right:-80px; background: radial-gradient(circle at 30% 30%, #7c3aed, transparent 70%); }
-  .orb2{ width:360px; height:360px; bottom:-100px; left:-90px; background: radial-gradient(circle at 60% 40%, #2563eb, transparent 70%); animation-delay:-6s; }
-  .orb3{ width:300px; height:300px; top:40%; left:55%; background: radial-gradient(circle at 40% 60%, #06b6d4, transparent 70%); opacity:.33; animation-delay:-10s; }
-  @keyframes float{ 0%,100%{ transform: translateY(0) translateX(0) scale(1);} 50%{ transform: translateY(-40px) translateX(25px) scale(1.08);} }
+/* glass cards */
+.glass{
+  background:linear-gradient(165deg, rgba(255,255,255,.045), rgba(255,255,255,.016));
+  border:1px solid rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(24px) saturate(130%);backdrop-filter:blur(24px) saturate(130%);
+  box-shadow:0 30px 90px -34px rgba(0,0,0,.85), 0 2px 10px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);}
+.card{border-radius:22px;padding:22px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent, rgba(157,107,242,.55) 35%, rgba(227,196,127,.4) 75%, transparent)}
+.input-card{animation:fadeUp .6s .08s ease both}
+.output-card{animation:fadeUp .6s .16s ease both;margin-top:22px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
-  .wrap{ max-width: 780px; margin: 0 auto; padding: 34px 18px 60px; }
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.card h2{font-size:1.06rem;font-weight:700;display:flex;align-items:center;gap:10px;letter-spacing:.01em}
+.h-ico{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:1.02rem;
+  background:rgba(109,107,240,.12);border:1px solid rgba(109,107,240,.30)}
+.head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
-  /* Header */
-  .app-header{ text-align:center; margin-bottom: 26px; }
-  .logo{ width:66px; height:66px; margin:0 auto 14px; display:grid; place-items:center; font-size:31px; border-radius:20px;
-    background: linear-gradient(135deg, rgba(139,92,246,.28), rgba(34,211,238,.18));
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow: 0 12px 40px rgba(124,58,237,.35), inset 0 1px 0 rgba(255,255,255,.15);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-  h1{ font-size: clamp(21px, 4.5vw, 30px); font-weight:800; letter-spacing:.3px; line-height:1.25;
-    background: linear-gradient(90deg,#c4b5fd,#818cf8,#67e8f9);
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  .tagline{ color: var(--muted); margin-top:8px; font-size:14px; max-width:560px; margin-inline:auto; }
+.chip{font-size:.76rem;color:#b8bedd;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);
+  padding:5px 11px;border-radius:999px;white-space:nowrap;font-weight:600}
 
-  /* Glass cards */
-  .card{
-    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.028));
-    backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border:1px solid var(--border); border-radius: 22px; padding: 22px; margin-bottom: 20px;
-    box-shadow: 0 24px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
-  }
-  .card-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
-  .card-head h2{ font-size:17px; font-weight:700; }
+.field-label{display:block;font-size:.82rem;font-weight:600;color:#a7adcb;margin:15px 0 7px;letter-spacing:.02em}
+.field-label .opt{color:#6b7190;font-weight:500}
 
-  .lbl{ display:block; font-size:12.5px; color:var(--muted); margin: 12px 0 7px; font-weight:600; letter-spacing:.2px; }
-  .lbl span{ color:var(--faint); font-weight:400; }
+.input-area{width:100%;min-height:252px;resize:vertical;background:rgba(3,4,10,.55);
+  border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px 16px;color:#e9ebfa;
+  font-family:'Hind Siliguri','Outfit',system-ui,sans-serif;font-size:.92rem;line-height:1.7;outline:none;
+  transition:border-color .2s, box-shadow .2s}
+.input-area::placeholder{color:#565c7a}
+.input-area:focus{border-color:rgba(109,107,240,.6);box-shadow:0 0 0 4px rgba(109,107,240,.14)}
 
-  textarea#inputBox, input#batchBox{
-    width:100%; background: rgba(6,6,14,.55); border:1px solid rgba(255,255,255,.10); border-radius:14px;
-    color:#e7e5f4; padding:13px 15px; font-size:14px; outline:none;
-    transition: border-color .2s, box-shadow .2s, background .2s;
-  }
-  textarea#inputBox{ min-height:240px; resize:vertical; font-family: ui-monospace, "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace; line-height:1.55; }
-  input#batchBox{ font-family: inherit; }
-  textarea#inputBox:focus, input#batchBox:focus{
-    border-color: rgba(139,92,246,.6);
-    box-shadow: 0 0 0 4px rgba(139,92,246,.14), 0 0 30px rgba(139,92,246,.18);
-    background: rgba(10,10,22,.6);
-  }
-  ::placeholder{ color:#57566a; }
+.input-line{width:100%;background:rgba(3,4,10,.55);border:1px solid rgba(255,255,255,.07);border-radius:12px;
+  padding:11px 14px;color:#e9ebfa;font-family:inherit;font-size:.92rem;outline:none;
+  transition:border-color .2s, box-shadow .2s}
+.input-line::placeholder{color:#565c7a}
+.input-line:focus{border-color:rgba(103,212,240,.55);box-shadow:0 0 0 4px rgba(103,212,240,.11)}
 
-  .btn-row{ display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; }
-  .btn{
-    border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px; border-radius:14px;
-    padding:14px 22px; display:inline-flex; align-items:center; gap:8px; justify-content:center;
-    transition: transform .15s ease, box-shadow .2s ease, filter .2s ease, background .2s ease;
-  }
-  .btn.primary{ background: linear-gradient(135deg,#7c3aed,#4f46e5 55%,#0891b2); color:#fff;
-    box-shadow: 0 10px 30px rgba(99,102,241,.4), inset 0 1px 0 rgba(255,255,255,.25); }
-  .btn.primary:hover{ filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(99,102,241,.5); }
-  .btn.primary:active{ transform: translateY(0) scale(.98); }
-  .btn.ghost{ background: rgba(255,255,255,.06); color:#cfcce0; border:1px solid rgba(255,255,255,.12); }
-  .btn.ghost:hover{ background: rgba(255,255,255,.1); }
-  .btn.sm{ padding:9px 15px; font-size:13.5px; border-radius:11px; }
-  .mini{ background:transparent; color:var(--muted); border:1px dashed rgba(255,255,255,.2); padding:6px 12px; border-radius:10px; font-size:12px; cursor:pointer; font-family:inherit; transition:.2s; }
-  .mini:hover{ color:#fff; border-color: rgba(139,92,246,.6); }
+/* buttons */
+.btn{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:#eceef8;
+  font-family:inherit;font-weight:600;font-size:.93rem;padding:12px 20px;border-radius:14px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;user-select:none;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, filter .18s ease}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.075)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn:focus-visible{outline:2px solid rgba(157,107,242,.8);outline-offset:2px}
+.btn.primary{
+  background:linear-gradient(135deg,#6d6bf0 0%, #9d6bf2 55%, #b877f5 100%);border:none;flex:1;
+  box-shadow:0 14px 36px -12px rgba(124,110,240,.6), inset 0 1px 0 rgba(255,255,255,.25);
+  font-size:1.02rem;padding:14px 22px;letter-spacing:.01em}
+.btn.primary:hover{box-shadow:0 18px 48px -12px rgba(124,110,240,.85);filter:brightness(1.09)}
+.btn.danger-ghost:hover{border-color:rgba(245,154,166,.5);background:rgba(245,154,166,.10);color:#ffe1e4}
+.btn.ghost{padding:8px 13px;font-size:.8rem;border-radius:10px;font-weight:600}
+.btn.copy{background:rgba(103,212,240,.08);border-color:rgba(103,212,240,.32);color:#a9e7fa}
+.btn.copy:hover{background:rgba(103,212,240,.16);box-shadow:0 10px 26px -12px rgba(103,212,240,.5)}
+.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.kbd-hint{margin-top:10px;font-size:.72rem;color:#5f6585}
+kbd{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:6px;padding:1px 6px;font-size:.7rem}
 
-  /* Status banner */
-  .status{ display:none; align-items:center; gap:10px; padding:13px 16px; border-radius:14px; font-weight:600; font-size:14.5px; margin-bottom:14px; animation: pop .45s ease; }
-  .status.ok{ display:flex; background: linear-gradient(135deg, rgba(16,185,129,.16), rgba(16,185,129,.06)); border:1px solid rgba(52,211,153,.35); color:#a7f3d0; }
-  .status.err{ display:flex; background: linear-gradient(135deg, rgba(248,113,113,.16), rgba(248,113,113,.05)); border:1px solid rgba(248,113,113,.35); color:#fecaca; }
-  @keyframes pop{ 0%{ transform: translateY(-6px); opacity:0;} 100%{ transform: translateY(0); opacity:1;} }
+/* success banner */
+.success-banner{margin-top:14px;padding:12px 16px;border-radius:14px;font-weight:600;font-size:.95rem;
+  background:linear-gradient(135deg,rgba(140,232,192,.13),rgba(103,212,240,.08));
+  border:1px solid rgba(140,232,192,.38);color:#b9f2d6;
+  animation:pop .5s cubic-bezier(.2,.9,.3,1.35) both}
+.hidden{display:none}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(-6px)}to{opacity:1;transform:none}}
 
-  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
-  .chip{ font-size:12px; padding:6px 11px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10); color:#c9c6dc; font-weight:600; }
-  .chip b{ color:#eae7ff; }
-  .chip.ok{ color:#a7f3d0; border-color: rgba(52,211,153,.3); background: rgba(16,185,129,.1); }
+/* output */
+.output-area{width:100%;min-height:170px;max-height:540px;overflow:auto;background:rgba(3,4,10,.55);
+  border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;white-space:pre-wrap;
+  word-wrap:break-word;overflow-wrap:anywhere;font-size:.9rem;line-height:1.85;color:#c6cadf;
+  font-family:'Hind Siliguri','Outfit',system-ui,sans-serif}
+.output-placeholder{display:block;color:#5f6585;font-size:.95rem;line-height:2.1;padding:22px 10px}
+.output-placeholder b{color:#b4a7f5}
 
-  .output{
-    background: rgba(5,5,12,.6); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px;
-    font-family: ui-monospace, "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-    font-size:13.5px; line-height:1.8; white-space: pre-wrap; word-break: break-word; color:#d9d7ea;
-    max-height: 560px; overflow-y:auto; box-shadow: inset 0 2px 18px rgba(0,0,0,.5);
-  }
-  .output::-webkit-scrollbar{ width:10px; }
-  .output::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.12); border-radius:8px; }
-  .output::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.2); }
+/* colored output preview — premium palette (copy-তে plain textই থাকে) */
+.output-area .o-batch{font-weight:800;letter-spacing:.02em;
+  background:linear-gradient(90deg,#a5b0fc,#c9b8fa 48%,#e8d5a4);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.output-area .o-head{color:#f1f2ff;font-weight:700}
+.output-area .o-url{color:#79d2f5}
+.output-area .o-desc{color:#93e9c1}
+.output-area .o-skip{color:#f7a8b0}
+.output-area .o-break{font-weight:700;letter-spacing:.12em;
+  background:linear-gradient(90deg,#9d6bf2,#6d6bf0 50%,#e3c47f);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.output-area .o-rule{color:#4c5178}
+.output-area .o-spec{font-weight:800;letter-spacing:.04em;
+  background:linear-gradient(90deg,#ecd3a0,#d4a94f);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.output-area .o-spec-head{color:#ecd3a0;font-weight:700}
+.output-area .o-txt{color:#c6cadf}
 
-  .note{ margin-top:14px; font-size:11.5px; color:var(--muted); background: rgba(255,255,255,.03); border:1px dashed rgba(255,255,255,.12); border-radius:12px; padding:10px 13px; line-height:1.75; }
-  .note b{ color:#cfcce0; }
+/* notes — top right, view-only */
+.notes{position:fixed;top:14px;right:14px;z-index:60;width:252px;border-radius:18px;padding:12px 14px;
+  background:rgba(7,8,15,.82);border:1px solid rgba(227,196,127,.18);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 20px 55px -14px rgba(0,0,0,.75);animation:fadeUp .7s .25s ease both}
+.notes-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.notes-title{font-weight:700;font-size:.85rem;letter-spacing:.01em;color:#ece4c8}
+.notes-toggle{flex:none;width:26px;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);color:#cfd3ea;cursor:pointer;font-size:1rem;line-height:1;
+  transition:background .15s}
+.notes-toggle:hover{background:rgba(255,255,255,.13)}
+.notes-sub{font-size:.66rem;color:#81879f;margin-top:3px}
+.notes-body{list-style:none;margin-top:9px;display:grid;gap:6px;font-size:.77rem;color:#c3c8de;line-height:1.45;
+  max-height:44vh;overflow:auto}
+.notes-body b{color:#fff;font-weight:600}
+.notes-body .n-ok{color:#8ce8c0;font-weight:600}
+.notes-body .n-warn{color:#e8c47f;font-weight:600}
+.notes-body .notes-empty{color:#666c8c;font-style:italic}
+.notes.collapsed .notes-sub,.notes.collapsed .notes-body{display:none}
+.notes.collapsed{padding:9px 12px}
 
-  footer{ text-align:center; color:var(--faint); font-size:12px; margin-top:26px; }
+/* toast */
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-24px);z-index:100;
+  padding:13px 22px;border-radius:14px;font-weight:600;font-size:.93rem;opacity:0;pointer-events:none;
+  background:rgba(9,10,18,.94);border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:0 22px 55px -14px rgba(0,0,0,.8);
+  transition:opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.3);max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(140,232,192,.5);color:#b9f2d6}
+.toast.error{border-color:rgba(245,154,166,.5);color:#ffd3d8}
 
-  .toast{
-    position:fixed; left:50%; bottom:26px; transform: translateX(-50%) translateY(20px);
-    background: rgba(20,20,32,.92); border:1px solid rgba(255,255,255,.14); color:#fff;
-    padding:11px 18px; border-radius:12px; font-size:13.5px; font-weight:600;
-    opacity:0; pointer-events:none; transition:.25s ease;
-    box-shadow: 0 16px 40px rgba(0,0,0,.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index:50;
-  }
-  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+.foot{text-align:center;color:#5f6585;font-size:.78rem;margin-top:26px;animation:fadeUp .6s .24s ease both}
 
-  @media (max-width: 520px){
-    .card{ padding:16px; border-radius:18px; }
-    .btn-row{ flex-direction:column; }
-    .btn{ width:100%; }
-    textarea#inputBox{ min-height:210px; font-size:13px; }
-    .output{ font-size:12.5px; padding:14px; }
-  }
+.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+/* responsive */
+@media (max-width:700px){
+  .wrap{padding:14px 14px 52px}
+  .card{border-radius:20px;padding:16px}
+  .logo{width:50px;height:50px;font-size:22px;border-radius:15px}
+  .input-area{min-height:210px;font-size:.9rem}
+  .btn-row{flex-direction:column}
+  .btn-row .btn{width:100%}
+  .output-area{font-size:.86rem;padding:13px}
+  .notes{position:static;width:auto;margin:0 0 16px;font-size:.72rem}
+  .notes-title{font-size:.8rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
 
-  <main class="wrap">
-    <header class="app-header">
-      <div class="logo">🔗</div>
-      <h1>Link Shorter <span>&amp;</span> Link List Generator</h1>
-      <p class="tagline">ফেসবুক পোস্ট লিংক + রিঅ্যাক্ট/কমেন্ট নির্দেশনা — এক ক্লিকে সুন্দর করে সাজানো লিস্ট</p>
-    </header>
+<div class="bg" aria-hidden="true">
+  <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+</div>
 
-    <!-- Input -->
-    <section class="card">
-      <div class="card-head">
-        <h2>📥 ইনপুট</h2>
-        <button class="mini" id="sampleBtn" type="button">✨ নমুনা লোড করুন</button>
+<main class="wrap">
+
+  <!-- ===== Batch Notes — সরাসরি visible (desktop: উপরের ডান কোণায়, mobile: পেজের উপরে), শুধু দেখার জন্য ===== -->
+  <aside id="notesCard" class="notes" aria-label="Batch notes">
+    <div class="notes-head">
+      <span class="notes-title">📋 Batch Notes</span>
+      <button id="notesToggle" class="notes-toggle" title="ছোট/বড় করুন" aria-label="Toggle notes">–</button>
+    </div>
+    <div class="notes-sub">জাস্ট দেখার জন্য • output কপিতে যাবে না</div>
+    <ul id="notesBody" class="notes-body">
+      <li class="notes-empty">এখনো কিছু প্রসেস হয়নি…</li>
+    </ul>
+  </aside>
+
+  <header class="hero">
+    <div class="logo" aria-hidden="true">✂️</div>
+    <div>
+      <h1>Link Shorter &amp; Link List Generator</h1>
+      <p class="tagline">Facebook পোস্ট লিংক + নির্দেশনা → প্রিমিয়াম সাজানো লিস্ট ✨ এক ক্লিকে</p>
+    </div>
+  </header>
+
+  <!-- ================= INPUT ================= -->
+  <section class="card glass input-card">
+    <div class="card-head">
+      <h2><span class="h-ico" aria-hidden="true">📥</span> Input</h2>
+      <div class="head-right">
+        <span id="liveStats" class="chip">—</span>
+        <button id="btnSample" class="btn ghost" type="button">📄 Sample</button>
       </div>
-      <label class="lbl" for="inputBox">লিংক ইনপুট <span>(Link No + URL + নির্দেশনা)</span></label>
-      <textarea id="inputBox" spellcheck="false"></textarea>
+    </div>
 
-      <label class="lbl" for="batchBox">ব্যাচ (Batch)</label>
-      <input id="batchBox" placeholder="খালি রাখলে অটো: 81-100" autocomplete="off" />
+    <label class="field-label" for="inputBox">লিংক + রিঅ্যাক্ট/কমেন্ট নির্দেশনা পেস্ট করুন</label>
+    <textarea id="inputBox" class="input-area" spellcheck="false"
+      placeholder="link no : 81&#10;&#10;Love or care 💗&#10;&#10;https://www.facebook.com/share/p/1DbQkt3xbm/&#10;&#10;Link no:82&#10;&#10;React love and care and wow&#10;&#10;https://www.facebook.com/reel/1443747657537919/?app=fbl"></textarea>
 
-      <div class="btn-row">
-        <button class="btn primary" id="shortBtn" type="button">⚡ Short Now</button>
-        <button class="btn ghost" id="clearBtn" type="button">🗑️ Clear</button>
+    <label class="field-label" for="batchBox">Batch <span class="opt">(optional — ফাঁকা রাখলে অটো তৈরি হবে, যেমন: 81-100)</span></label>
+    <input id="batchBox" class="input-line" type="text" spellcheck="false"
+      placeholder="নিজে লিখুন (যেমন: 81-100 / Batch 5) — না লিখলে প্রথম-শেষ লিংক নম্বর থেকে অটো" />
+
+    <div class="btn-row">
+      <button id="btnShort" class="btn primary" type="button">⚡ Short Now</button>
+      <button id="btnClear" class="btn danger-ghost" type="button">🗑️ Clear All</button>
+    </div>
+    <p class="kbd-hint">Tip: টেক্সটএলাকায় <kbd>Ctrl</kbd> + <kbd>Enter</kbd> = Short Now</p>
+  </section>
+
+  <!-- ================= OUTPUT ================= -->
+  <section class="card glass output-card">
+    <div class="card-head">
+      <h2><span class="h-ico" aria-hidden="true">📤</span> Output</h2>
+      <div class="head-right">
+        <span id="outStats" class="chip">—</span>
+        <button id="btnCopy" class="btn copy" type="button">📋 Copy</button>
       </div>
-    </section>
+    </div>
 
-    <!-- Output -->
-    <section class="card" id="outCard" hidden>
-      <div class="card-head">
-        <h2>📤 আউটপুট</h2>
-        <button class="btn primary sm" id="copyBtn" type="button">📋 Copy Output</button>
-      </div>
-      <div class="status" id="status"></div>
-      <div class="chips" id="stats"></div>
-      <div class="output" id="output"></div>
-      <div class="note" id="note"></div>
-    </section>
+    <div id="successBanner" class="success-banner hidden">সফলভাবে লিংক সাজানো সম্পূর্ণ হয়েছে ✅</div>
 
-    <footer>Made with 💜 · ইনপুট ও আউটপুট আপনার ব্রাউজারে (LocalStorage) সেভ থাকে — Clear চাপলে মুছে যাবে</footer>
-  </main>
+    <pre id="outputBox" class="output-area"></pre>
+  </section>
 
-  <div class="toast" id="toast"></div>
+  <footer class="foot">🔒 সব ডেটা শুধু আপনার ব্রাউজারে থাকে (LocalStorage) — কোনো সার্ভারে যায় না</footer>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<noscript><p style="text-align:center;padding:20px;color:#fb7185">অ্যাপটি চালাতে JavaScript চালু রাখুন।</p></noscript>
 
 <script>
-/* =========================================================
+'use strict';
+/* =====================================================
    Link Shorter & Link List Generator
-   - Single file, dark glassmorphism UI
-   - Parses Facebook post links + reaction/comment instructions
-   - Sorts by number, marks missing links, admin/vip at bottom
-   - LocalStorage persistence (safe fallback for sandboxed preview)
-   ========================================================= */
+   Single-file app — all CSS & JS inline, LocalStorage save
+   ===================================================== */
 
-/* ---------- Safe storage (works even in sandboxed iframe) ---------- */
-const store = (function(){
-  try {
-    const t = "__t__";
-    window.localStorage.setItem(t, "1");
-    window.localStorage.removeItem(t);
-    return window.localStorage;
-  } catch(e){
-    const mem = {};
-    return {
-      getItem: k => (k in mem ? mem[k] : null),
-      setItem: (k,v) => { mem[k] = String(v); },
-      removeItem: k => { delete mem[k]; }
-    };
-  }
-})();
+/* ---------------- storage ---------------- */
+const LS = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){} },
+  del(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+const K = { input:'llg_input', batch:'llg_batch', output:'llg_output', notes:'llg_notes' };
 
-const KEY_INPUT  = "lsg.input";
-const KEY_BATCH  = "lsg.batch";
-const KEY_RESULT = "lsg.result";
+/* ---------------- small helpers ---------------- */
+const BN_DIG = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+const toEnDigits = s => String(s).replace(/[০-৯]/g, d => BN_DIG[d]);
+const toBnDigits = s => String(s).replace(/\d/g, d => String.fromCharCode(0x09E6 + (+d)));
+const stripInvisible = s => s.replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]/g, '');
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-/* ---------- Emoji / label rotation ---------- */
-const HEAD_EMOJIS    = ['🎯','🌟','🌀','🔥','🌈','⚡','🌸','💎','🎉','🌍','🎁','🪐','🍀','💫','🕊️','🎈','✨','🏆','🔮','🌺'];
-const LABELS         = ['Post','Post No','Link','Serial','Serial No','Count'];
-const COMMENT_EMOJIS = ['😊','😍','😻','😇','😘','😜','😙','💖','🥰','😎','🤩','😁'];
-
-/* ---------- Helpers ---------- */
-function cleanLine(s){
-  return s.replace(/[\u200B-\u200F\uFEFF]/g, "").replace(/\s+$/, "");
-}
-
-function decodeEntities(s){
-  return s
-    .replace(/&amp;/g,  "&")
-    .replace(/&lt;/g,   "<")
-    .replace(/&gt;/g,   ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#0*39;/g,"'");
-}
-
-/* ---------- Header detection ---------- */
-function parseHeader(line){
-  const s = line.replace(/[\u200B-\u200F\uFEFF]/g, "").trim();
-  if(!s) return null;
-
-  // Special: #VIP / #Admin / #Moderator ...
-  if(s.startsWith("#")){
-    return { type:"special", label:s };
-  }
-
-  // Numbered header: Link / Post / Serial / Count ... + number
-  const kw = s.match(/^(link|post|serial|count)\b/i);
-  if(kw){
-    const numMatch = s.match(/\d+/);
-    if(numMatch){
-      const after = s.slice(numMatch.index + numMatch[0].length).trim();
-      const extra = after.replace(/^[\s:.\-–—,]+/, "").trim();
-      return { type:"normal", number: parseInt(numMatch[0], 10), extra };
-    }
-  }
-
-  // Bare number on its own line
-  if(/^\d{1,5}$/.test(s)){
-    return { type:"normal", number: parseInt(s, 10), extra:"" };
-  }
-
-  return null;
-}
-
-/* ---------- Split input into blocks ---------- */
-function parseBlocks(text){
-  const lines  = text.split(/\r?\n/);
-  const blocks = [];
-  let cur = null;
-
-  const push = () => { if(cur) blocks.push(cur); cur = null; };
-
-  for(const raw of lines){
-    const line = cleanLine(raw);
-    const hdr  = parseHeader(line);
-    if(hdr){
-      push();
-      cur = { type: hdr.type, number: hdr.number, label: hdr.label, body: [] };
-      if(hdr.type === "normal" && hdr.extra) cur.body.push(hdr.extra);
-    } else if(cur){
-      cur.body.push(line);
-    }
-  }
-  push();
-
-  // resolve URL + instruction for each block
-  return blocks.map(b => {
-    let url = "", urlLineIdx = -1;
-    for(let i = 0; i < b.body.length; i++){
-      const m = b.body[i].match(/https?:\/\/[^\s"'<>]+/);
-      if(m){ url = m[0]; urlLineIdx = i; break; }
-    }
-    url = decodeEntities(url);
-
-    const ins = [];
-    for(let i = 0; i < b.body.length; i++){
-      let l = b.body[i];
-      if(i === urlLineIdx && url){
-        l = l.replace(/https?:\/\/[^\s"'<>]+/, "").trim();
-      }
-      l = decodeEntities(l.trim());
-      if(l !== "") ins.push(l);
-    }
-
-    return { type: b.type, number: b.number, label: b.label, url, instruction: ins };
-  }).filter(b => b.url !== "" || b.instruction.length > 0);
-}
-
-/* ---------- Special section ordering ---------- */
-const SPECIAL_TYPE_ORDER = { admin:0, moderator:1, mod:1, vip:2 };
-function specialKey(b){
-  const m = (b.label || "").match(/#\s*(admin|mod(?:erator)?|vip)?\s*(\d*)/i);
-  let type = "other", num = 0;
-  if(m && m[1]) type = m[1].toLowerCase();
-  if(type === "mod") type = "moderator";
-  if(m && m[2]) num = parseInt(m[2], 10) || 0;
-  return [ (SPECIAL_TYPE_ORDER[type] !== undefined ? SPECIAL_TYPE_ORDER[type] : 3), num ];
-}
-
-/* ---------- Generate formatted output ---------- */
-function generateOutput(blocks, batchInput){
-  const normal  = blocks.filter(b => b.type === "normal").sort((a,b) => a.number - b.number);
-  const special = blocks.filter(b => b.type === "special").sort((a,b) => {
-    const ka = specialKey(a), kb = specialKey(b);
-    if(ka[0] !== kb[0]) return ka[0] - kb[0];
-    return ka[1] - kb[1];
+/* Fancy Unicode (bold 𝐋𝐤, fullwidth) → normal ASCII, যেন "𝐋" = "link" বোঝা যায় */
+function foldLine(s){
+  return s.replace(/[\u{1D400}-\u{1D433}\u{1D7CE}-\u{1D7D7}\u{FF00}-\u{FF5E}]/gu, ch => {
+    const c = ch.codePointAt(0);
+    if(c >= 0x1D400 && c <= 0x1D419) return String.fromCharCode(65 + (c - 0x1D400));  // bold A-Z
+    if(c >= 0x1D41A && c <= 0x1D433) return String.fromCharCode(97 + (c - 0x1D41A));  // bold a-z
+    if(c >= 0x1D7CE && c <= 0x1D7D7) return String('0123456789'[c - 0x1D7CE]);         // bold 0-9
+    if(c >= 0xFF01 && c <= 0xFF5E)  return String.fromCharCode(c - 0xFEE0);            // fullwidth → ascii
+    return ch;
   });
+}
 
-  // Batch label
-  let batchLabel;
-  if(batchInput && batchInput.trim()){
-    batchLabel = batchInput.trim().replace(/^batch\s*:?\s*/i, "").trim() || "—";
-  } else if(normal.length){
-    const min = normal[0].number, max = normal[normal.length - 1].number;
-    batchLabel = (min === max) ? String(min) : (min + "-" + max);
-  } else {
-    batchLabel = "—";
+/* ---------------- rotation sets ---------------- */
+const EMOJIS   = ['🎯','🌟','🌀','✨','⚡','🌸','💎','🎉','🌍','🚀','🌙','🔥','🍀','🎊','🌊','🛠','🏆','🎈','🧧','🌻','⭐'];
+const PREFIXES = ['Post','Post No','Link','Serial','Serial No','Count'];
+const TAILS    = ['😊','😍','😻','😇','😘','😜','😙','💖','🥰','😄','🤩','😎','💕','🥳','😺','🌷'];
+const BREAK_LINE = '✨🔥 --- 🔥✨';
+const SPEC_TITLE = ['━━━━━━━━━━━━━━━━━━━━━━','🛡️ SPECIAL LINKS','━━━━━━━━━━━━━━━━━━━━━━'];
+const GROUP_ORDER = { admin:0, mod:1, moderator:1, vip:2 };
+const TYPE_NAME   = { admin:'Admin', mod:'Moderator', moderator:'Moderator', vip:'VIP' };
+
+/* ---------------- parser ----------------
+   Entry marker lines look like:
+   "link no : 81", "Link  - 86", "Link number :93", "Link : 90", "লিংক নম্বর ৮১" …
+   Special markers: "#Admin 01", "#VIP 2", "#Moderator 1" …
+------------------------------------------------ */
+/* যেকোনো front-এ লেখা হলেও ধরা যাবে:
+   "Link No_38", "Link No : 35 (Care...)", "লিং নং ২৭", "fblLink No : 35", "link no.. 100" ...
+   - keyword-এর আগে ৩টা ছোট ASCII letter পর্যন্ত থাকতে পারে (fbl...)
+   - keyword আর number-এর মাঝে যেকোনো symbol থাকতে পারে (_, : . - # ...)
+   - number-এর পরে লেখা থাকলে (কিছুই না কিংবা parenthetical instruction) সেটা description হিসেবে নেওয়া হয় */
+const RE_NORMAL = /^(?<pre>[^\p{L}\p{N}]{0,3}[A-Za-z]{0,3}\s?)(?<kw1>links|link|serials|serial|posts|post|numbers|number|nos|no|লিংক|লিঙ্ক|লিং|সিরিয়াল|পোস্ট|নম্বর|নাম্বার|নং|সংখ্যা)\s*(?<kw2>numbers|number|nos|no|নম্বর|নাম্বার|নং|সংখ্যা)?(?<sep>[^\p{L}\p{N}]{0,10})(?<num>[0-9০-৯]{1,6})(?<tail>.*)$/iu;
+const RE_SPECIAL = /^(?<pre>[^\p{L}\p{N}]*?)(?<kw>admin|moderator|mod|vip)(?<rest>.*)$/iu;
+const RE_URL = /https?:\/\/[^\s]+/i;
+
+function parseNormal(s){
+  const m = s.match(RE_NORMAL);
+  if(!m) return null;
+  const tail = (m.groups.tail || '').trim();
+  // number-এর পরে যে লেখা থাকুক না কেন → description-এর নরমাল টেক্সট হিসেবে নেওয়া হয়,
+  // যেন "Link 21 সম্পূর্ণ ব্লগ দেখেন" এর মতো লাইন কখনো skip না হয়
+  return { kind:'link', num: parseInt(toEnDigits(m.groups.num), 10), tail };
+}
+function parseSpecial(s){
+  const m = s.match(RE_SPECIAL);
+  if(!m) return null;
+  const pre = m.groups.pre, kw = m.groups.kw, rest = m.groups.rest;
+  const numM = rest.match(/^\s*[:\-\u2013\u2014]?\s*([0-9০-৯]{1,4})/);
+  if(numM){
+    return { kind:'special', type: kw.toLowerCase(), order: parseInt(toEnDigits(numM[1]),10),
+             firstDesc: rest.slice(numM[0].length).trim() };
   }
-
-  // Missing numbers
-  const present = new Set(normal.map(b => b.number));
-  const skipped = [];
-  if(normal.length){
-    for(let n = normal[0].number; n <= normal[normal.length - 1].number; n++){
-      if(!present.has(n)) skipped.push(n);
-    }
-  }
-
-  const out = [];
-  out.push("⚡ ─── BATCH: " + batchLabel + " ─── ⚡");
-  out.push("");
-
-  const pendingSkipped = skipped.slice(); // ascending
-
-  normal.forEach((b, i) => {
-    const emoji = HEAD_EMOJIS[i % HEAD_EMOJIS.length];
-    const label = LABELS[i % LABELS.length];
-    const cmt   = COMMENT_EMOJIS[i % COMMENT_EMOJIS.length];
-
-    // emit missing numbers before this one
-    while(pendingSkipped.length && pendingSkipped[0] < b.number){
-      out.push("📌 Link No " + pendingSkipped.shift() + " (নেই — Skipped)");
-      out.push("");
-    }
-
-    out.push(emoji + " " + label + ": " + b.number);
-    out.push("📌 " + (b.url || "(লিংক পাওয়া যায়নি)"));
-
-    const ins = b.instruction;
-    if(ins.length === 0){
-      out.push("💬 " + cmt);
-    } else if(ins.length === 1){
-      out.push("💬 " + ins[0] + " " + cmt);
-    } else {
-      out.push("💬 " + ins[0]);
-      for(let k = 1; k < ins.length - 1; k++) out.push("   " + ins[k]);
-      out.push("   " + ins[ins.length - 1] + " " + cmt);
-    }
-    out.push("");
-
-    // stylish break after every 10 links
-    if((i + 1) % 10 === 0){
-      out.push("✨🔥 --- 🔥✨");
-      out.push("");
-    }
-  });
-
-  // any skipped numbers after the last link
-  while(pendingSkipped.length){
-    out.push("📌 Link No " + pendingSkipped.shift() + " (নেই — Skipped)");
-    out.push("");
-  }
-
-  // Admin / Moderator / VIP section
-  if(special.length){
-    out.push("━━━━━━━━━━━━━━━━━━━━━");
-    out.push("🛡️ ADMIN / MODERATOR / VIP 🛡️");
-    out.push("━━━━━━━━━━━━━━━━━━━━━");
-    out.push("");
-    special.forEach(b => {
-      out.push(b.label);
-      b.instruction.forEach(l => out.push(l));
-      out.push("📌 " + (b.url || "(লিংক পাওয়া যায়নি)"));
-      out.push("");
-    });
-  }
-
-  while(out.length && out[out.length - 1] === "") out.pop();
-
-  const allUrls = blocks.map(b => b.url).filter(Boolean);
-  const fbWatch = allUrls.filter(u => /fb\.watch/i.test(u));
-
-  return {
-    outputText: out.join("\n"),
-    batchLabel,
-    normalCount: normal.length,
-    specialCount: special.length,
-    skipped,
-    fbWatch
-  };
-}
-
-/* ---------- UI elements ---------- */
-const $ = id => document.getElementById(id);
-const inputBox  = $("inputBox");
-const batchBox  = $("batchBox");
-const shortBtn  = $("shortBtn");
-const clearBtn  = $("clearBtn");
-const sampleBtn = $("sampleBtn");
-const outCard   = $("outCard");
-const statusEl  = $("status");
-const statsEl   = $("stats");
-const outputEl  = $("output");
-const noteEl    = $("note");
-const copyBtn   = $("copyBtn");
-const toastEl   = $("toast");
-
-/* ---------- Status ---------- */
-function showOk(){
-  statusEl.className = "status ok";
-  statusEl.textContent = "সফলভাবে লিংক সাজানো সম্পূর্ণ হয়েছে ✅";
-  replayAnim(statusEl);
-}
-function showErr(msg){
-  statusEl.className = "status err";
-  statusEl.textContent = "⚠️ " + msg;
-  replayAnim(statusEl);
-}
-function replayAnim(el){
-  el.style.animation = "none";
-  void el.offsetWidth;
-  el.style.animation = "";
-}
-
-/* ---------- Toast ---------- */
-let toastTimer = null;
-function toast(msg){
-  toastEl.textContent = msg;
-  toastEl.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
-}
-
-/* ---------- Note (small, view-only) ---------- */
-function buildNote(res){
-  const parts = [];
-  parts.push("📦 <b>ব্যাচ:</b> " + res.batchLabel);
-  parts.push("🔢 <b>মোট লিংক:</b> " + res.normalCount + " টি" + (res.specialCount ? " + " + res.specialCount + " টি Admin/VIP" : ""));
-  if(res.skipped.length){
-    parts.push("⏭️ <b>স্কিপ করা:</b> " + res.skipped.join(", "));
-  } else {
-    parts.push("⏭️ <b>স্কিপ করা:</b> নেই ✅");
-  }
-  if(res.fbWatch.length){
-    parts.push("🔗 <b>fb.watch চেক:</b> " + res.fbWatch.length + " টি fb.watch লিংক পাওয়া গেছে — পোস্ট করার আগে খুলে যাচাই করুন ✅");
-  } else {
-    parts.push("🔗 <b>fb.watch চেক:</b> fb.watch লিংক পাওয়া যায়নি — সব লিংক সরাসরি facebook.com ✅");
-  }
-  return parts.join("<br>");
-}
-
-/* ---------- Render ---------- */
-function renderResult(res){
-  outputEl.textContent = res.outputText;
-  showOk();
-
-  statsEl.innerHTML =
-    '<span class="chip">📦 <b>' + res.batchLabel + '</b></span>' +
-    '<span class="chip">🔢 মোট লিংক: <b>' + res.normalCount + '</b></span>' +
-    '<span class="chip ok">⏭️ স্কিপ: <b>' + res.skipped.length + '</b></span>' +
-    (res.specialCount ? '<span class="chip">🛡️ Admin/VIP: <b>' + res.specialCount + '</b></span>' : '') +
-    '<span class="chip">✏️ অক্ষর: <b>' + res.outputText.length + '</b></span>';
-
-  noteEl.innerHTML = buildNote(res);
-  outCard.hidden = false;
-
-  saveAll();
-}
-
-/* ---------- Main action ---------- */
-function shortNow(){
-  const text = inputBox.value;
-  if(!text.trim()){
-    outCard.hidden = false;
-    showErr("ইনপুট বক্স খালি! উপরের ফরম্যাটে লিংক দিন।");
-    return;
-  }
-
-  const blocks = parseBlocks(text);
-  const normalCount = blocks.filter(b => b.type === "normal").length;
-
-  if(blocks.length === 0){
-    outCard.hidden = false;
-    showErr("কোনো লিংক খুঁজে পাওয়া যায়নি। Link No + URL সহ ইনপুট দিন।");
-    return;
-  }
-  if(normalCount === 0){
-    outCard.hidden = false;
-    showErr("Link No সহ কোনো সাধারণ লিংক পাওয়া যায়নি (শুধু #Admin/#VIP থাকলে কাজ করবে না)।");
-    return;
-  }
-
-  const res = generateOutput(blocks, batchBox.value);
-  renderResult(res);
-
-  setTimeout(() => {
-    try { outCard.scrollIntoView({ behavior:"smooth", block:"start" }); } catch(e){}
-  }, 60);
-}
-
-/* ---------- Copy ---------- */
-function fallbackCopy(text){
-  const ta = document.createElement("textarea");
-  ta.value = text;
-  ta.style.position = "fixed";
-  ta.style.top = "-9999px";
-  ta.style.opacity = "0";
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  let ok = false;
-  try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
-  document.body.removeChild(ta);
-  return ok;
-}
-function copyOutput(){
-  const text = outputEl.textContent;
-  if(!text){ toast("কপি করার মতো কিছু নেই"); return; }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(() => {
-      toast("📋 সম্পূর্ণ আউটপুট কপি হয়েছে ✅");
-      flashCopyBtn();
-    }).catch(() => {
-      const ok = fallbackCopy(text);
-      toast(ok ? "📋 কপি হয়েছে ✅" : "❌ কপি ব্যর্থ — ম্যানুয়ালি কপি করুন");
-    });
-  } else {
-    const ok = fallbackCopy(text);
-    toast(ok ? "📋 কপি হয়েছে ✅" : "❌ কপি ব্যর্থ — ম্যানুয়ালি কপি করুন");
-  }
-}
-function flashCopyBtn(){
-  const old = copyBtn.textContent;
-  copyBtn.textContent = "✅ Copied!";
-  setTimeout(() => { copyBtn.textContent = old; }, 1600);
-}
-
-/* ---------- Persistence ---------- */
-function saveAll(){
-  try {
-    store.setItem(KEY_INPUT, inputBox.value);
-    store.setItem(KEY_BATCH, batchBox.value);
-    store.setItem(KEY_RESULT, JSON.stringify({
-      output: outputEl.textContent,
-      stats: statsEl.innerHTML,
-      note: noteEl.innerHTML
-    }));
-  } catch(e){ /* ignore */ }
-}
-let saveTimer = null;
-function debouncedSave(){
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveAll, 350);
-}
-
-function restore(){
-  try {
-    const inp = store.getItem(KEY_INPUT);
-    const bat = store.getItem(KEY_BATCH);
-    if(inp !== null) inputBox.value = inp;
-    if(bat !== null) batchBox.value = bat;
-
-    const res = store.getItem(KEY_RESULT);
-    if(res){
-      const data = JSON.parse(res);
-      if(data.output){
-        outputEl.textContent = data.output;
-        statsEl.innerHTML = data.stats || "";
-        noteEl.innerHTML  = data.note || "";
-        outCard.hidden = false;
-        showOk();
-      }
-    }
-  } catch(e){ /* ignore */ }
-}
-
-function clearAll(){
-  inputBox.value = "";
-  batchBox.value = "";
-  outputEl.textContent = "";
-  statsEl.innerHTML = "";
-  noteEl.innerHTML = "";
-  outCard.hidden = true;
-  statusEl.className = "status";
-  try {
-    store.removeItem(KEY_INPUT);
-    store.removeItem(KEY_BATCH);
-    store.removeItem(KEY_RESULT);
-  } catch(e){ /* ignore */ }
-  toast("🗑️ সব মুছে ফেলা হয়েছে");
-  inputBox.focus();
-}
-
-/* ---------- Sample data ---------- */
-const SAMPLE = `link no :  81
-
-Love or care 💗🥰
-
-https://www.facebook.com/share/p/1DbQkt3xbm/
-
-
-
-Link no:82
-
-React love and care and wow
-
-No like 
-
-Cmnt:price??
-
-https://www.facebook.com/reel/1443747657537919/?app=fbl
-
-
-
-Link no:83
-
-Care only
-
-https://www.facebook.com/100095017903885/posts/775316175645639/?app=fbl
-
-
-
-Link  No 84
-
-Love +Comment 
-
-https://www.facebook.com/share/1DAwsS2Xjd/
-
-
-
-Link no 85 
-
-React + পোস্ট বুঝে কমেন্ট 
-
-https://www.facebook.com/100068913505774/posts/pfbid02KV5kcQEux25AZmm8bbi688fGKfUdSeCDEPM8xStnUdPxWXi9QPSZzfF4MavXVys4l/
-
-
-
-Link - 86
-
-Only care ✅ 
-
-https://www.facebook.com/61578929278449/posts/122099445290964309/?app=fbl
-
-
-
-Link no :87
-
-Haha/ sad 
-
-No cmnt 🚫
-
-https://www.facebook.com/iptasarkar/videos/1497860157901743/?app=fbl
-
-
-
-Link No 88 
-
- Care
-
- comment 🥰 💥
-
- https://www.facebook.com/reel/1772493523438856/?app=fbl
-
-
-
-Link 89
-
-React ✅
-
-গঠনমূলক কমেন্ট ✅
-
-ইমোজি কমেন্ট ❌❌❌(কমপ্লিন করব) 
-
-View Must ✅
-
-https://www.facebook.com/reel/4280238235556883/?mibextid=rS40aB7S9Ucbxw6v
-
-
-
-Link : 90
-
-React + Comment ✅
-
-https://www.facebook.com/share/17DMPyBC6x/
-
-
-
-Link no : 91 
-
-Ract : love and care 
-
-Comment : masa allah....... 
-
-https://www.facebook.com/share/p/1HK1UpE1TF/
-
-
-
-Link No :92
-
-Ract: love and care
-
-Comment : masallah
-
-https://www.facebook.com/61553903172523/posts/122242763810130105/?substory_index=4386596251613651&amp;mibextid=rS40aB7S9Ucbxw6v
-
-
-
-Link number :93
-
-Care+love react 
-
-Comment: Right+Hmm+masallah 
-
-https://www.facebook.com/share/p/1ZS5iirjLH/
-
-
-
-Link no 94
-
-Care an comment 
-
-https://www.facebook.com/reel/1491678629280232/?app=fbl
-
-
-
-Link no 95 
-
-Love + care + Comment = Jumma Mubarak 
-
-https://www.facebook.com/share/v/18X7ue6kJR/
-
-
-
-Link No:96
-
-Haha React/পোস্ট বুঝে কমেন্ট 
-
-https://www.facebook.com/share/p/1AXMAJYven/
-
-
-
-link No  97
-
-Love Care 
-
-(ঠিক /রাইট / #Justice For hadi)
-
-এগুলা ছাড়া কমেন্ট করলে এডমিন কে রিপোর্ট করমু ওকে।
-
-https://www.facebook.com/share/v/1chvD9AzPm/
-
-
-
-link no 98
-
-love &  cear
-
-গঠনমূলক কমেন্ট 
-
-https://www.facebook.com/share/p/1QCVLyaYTq/?mibextid=wwXIfr
-
-
-
-Link no.99
-
-Care react and comment
-
-https://www.facebook.com/share/p/1E6YKxMQAo/
-
-
-
-Link no.. 100 
-
-Care & coment 
-
-https://www.facebook.com/reel/1368952018253377/?app=fbl
-
-
-
-#VIP 1
-
-🏅 VIP of the Week – আনুষ্ঠানিক ঘোষণা 🏅
-
-📅 সপ্তাহ: 39th | Support Link Box
-
-🔹 এই সপ্তাহের ধারাবাহিক সাপোর্ট, সক্রিয়তা এবং সর্বোচ্চ অবদানের স্বীকৃতি পাচ্ছেন —🥉@Muntaha Tasnim
-
-তাদের নিয়মিত অংশগ্রহণ, দায়িত্বশীলতা এবং সবসময় এগিয়ে থাকার মানসিকতা তাকে এই সপ্তাহের সেরা (VIP) সদস্য হিসেবে প্রতিষ্ঠিত করেছে।
-
-📌 এই সম্মাননা শুধু একটি বিশেষ রোল নয় —
-
-এটি প্রমাণ করে যে, অঙ্গীকার, পরিশ্রম ও ধারাবাহিকতা আপনাকে আলাদা করে তোলে।
-
-✅ আগামী সপ্তাহের VIP কি আপনি হতে যাচ্ছেন?
-
-👉 নিয়ম মেনে চলুন, সাপোর্ট দিন এবং সক্রিয় থাকুন।
-
-মনে রাখবেন এখন থেকে মোট Vip কিন্তু ৩জন,,🎇
-
-— Support Link Box Admin Panel 🛡️
-
-https://www.facebook.com/share/p/1DCZUj4ERh/
-
-
-
-#VIP 2
-
-🏅 VIP of the Week – আনুষ্ঠানিক ঘোষণা 🏅
-
-📅 সপ্তাহ: 39th | Support Link Box
-
-🔹 এই সপ্তাহের ধারাবাহিক সাপোর্ট, সক্রিয়তা এবং সর্বোচ্চ অবদানের স্বীকৃতি পাচ্ছেন —🥉@MD Roni Islam
-
-তাদের নিয়মিত অংশগ্রহণ, দায়িত্বশীলতা এবং সবসময় এগিয়ে থাকার মানসিকতা তাকে এই সপ্তাহের সেরা (VIP) সদস্য হিসেবে প্রতিষ্ঠিত করেছে।
-
-📌 এই সম্মাননা শুধু একটি বিশেষ রোল নয় —
-
-এটি প্রমাণ করে যে, অঙ্গীকার, পরিশ্রম ও ধারাবাহিকতা আপনাকে আলাদা করে তোলে।
-
-✅ আগামী সপ্তাহের VIP কি আপনি হতে যাচ্ছেন?
-
-👉 নিয়ম মেনে চলুন, সাপোর্ট দিন এবং সক্রিয় থাকুন।
-
-মনে রাখবেন এখন থেকে মোট Vip কিন্তু ৩জন,,🎇
-
-— Support Link Box Admin Panel 🛡️
-
-Love&react+Sundor comment
-
-https://www.facebook.com/share/p/1DUdQ4AfAQ/
-
-
-
-#Admin 01
-
-👤 Admin: Ariyan Rubel
-
-────────────────────────
-
-⛔ Emoji / Sticker→Not Allowed
-
-😄 HA-HA/হা-হা React→ Allowed
-
-💬 Comments'n পোস্ট বুজে গঠন মূলক কমেন্ট 
-
-────────────────────────
-
-https://www.facebook.com/share/p/1GBmNMs5gP/
-
-
-
-#Admin 03
-
-👤 Admin: @Shuvo Sutradhar
-
-: রিয়েক্ট : লাভ : কেয়ার : সেড 
-
-কমেন্ট  পোস্ট অনুযায়ী 
-
-https://www.facebook.com/share/v/1R4thXR46C/?mibextid=wwXIfr
-
-
-
-#Admin 02
-
-👤 Admin: Mohammad Mustakim 
-
-রিয়েক্ট _ লাভ / কেয়ার / সেড 
-
-কেমন্ট : পোস্ট অনুযায়ী 
-
-https://www.facebook.com/share/r/1UVSyy7si3/?mibextid=wwXIfr
-
-
-
-#Admin 05
-
-👤 Admin: @Md Shihab Khan
-
- রিয়েক্ট / লাভ/ কেয়ার / সেড 
-
-কমেন্ট পোস্ট অনুযায়ী 
-
-https://www.facebook.com/share/p/17MULHjBZg/?mibextid=wwXIfr
-
-
-
-#Admin 04
-
-👤 Admin: @Mamun Aravi
-
- রিয়েক্ট : হাহা / লাভ 
-
-কমেন্ট :  ফানি ফানি বরো কমেন্ট 
-
-https://www.facebook.com/share/r/189qHZ83kC/?mibextid=wwXIfr`;
-
-/* ---------- Events ---------- */
-shortBtn.addEventListener("click", shortNow);
-clearBtn.addEventListener("click", clearAll);
-copyBtn.addEventListener("click", copyOutput);
-
-sampleBtn.addEventListener("click", () => {
-  inputBox.value = SAMPLE;
-  batchBox.value = "";
-  toast("✨ নমুনা ডেটা লোড হয়েছে — Short Now চাপুন");
-  inputBox.focus();
-});
-
-inputBox.addEventListener("input", debouncedSave);
-batchBox.addEventListener("input", debouncedSave);
-
-// Ctrl/Cmd + Enter → Short Now
-document.addEventListener("keydown", e => {
-  if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
-    e.preventDefault();
-    shortNow();
-  }
-});
-
-/* ---------- Boot ---------- */
-inputBox.placeholder = "link no :  81\nLove or care 💗🥰\nhttps://www.facebook.com/share/p/...\n\nLink no:82\n...";
-restore();
-</script>
-</body>
-</html>
+  // নম্বর ছাড়া special → শুধু "#" prefix
